@@ -1,0 +1,24 @@
+.form{
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    min-width: 100vw;
+    min-height: 100vh;
+}
+
+div{
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+form input[type = "submit"]{
+    padding: 10px;
+}
+
+button {
+    margin: 10px;
+}
