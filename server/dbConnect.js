@@ -20,6 +20,13 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true }
 })
 
-const User = mongoose.model('User', userSchema);
+const bpmSchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+    value: {type: Number, required: true},
+    timestamp: {type: Date, default: Date.now}
+});
 
-export default {dbConnect, User};
+const User = mongoose.model('User', userSchema);
+const Bpm = mongoose.model('Bpm', bpmSchema);
+
+export default {dbConnect, User, Bpm};

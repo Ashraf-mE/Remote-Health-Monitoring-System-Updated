@@ -3,19 +3,37 @@ import bcrypt from "bcryptjs";
 import dbModule from "./dbConnect.js";
 import jwt from 'jsonwebtoken';
 import cookieParser from "cookie-parser";
-const {dbConnect, User} = dbModule;
+const {dbConnect, User, Bpm} = dbModule;
 import cors from 'cors';
+import bodyParser from 'body-parser';
+import mongoose from "mongoose";
 
 const app = express();
-app.use(express.json());
+
+const allowedOrigins = [
+    `http://${process.env.HOST}:${process.env.PORT}`,
+    'http://192.168.188.154:80', // NodeMCU 1.0
+];
+
 app.use(cors({
-    origin: `http://${process.env.HOST}:${process.env.PORT}`,
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin) || !origin) {
+          callback(null, true);  // Allow the request
+        } else {
+          callback(new Error('Not allowed by CORS'));  // Block the request
+        }
+      },
     credentials: true
 }));
 
+app.use(bodyParser.json());
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(express.json());
 
 dbConnect();
+
+let BpmValue;
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -57,7 +75,7 @@ app.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(req.body.password, dbDetails.password);
 
         if (isMatch) {
-            const payload = {username: dbDetails.username, userId: dbDetails._id };
+            const payload = {username: dbDetails.username, userId: dbDetails._id};
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
             res.cookie('token', token, {
@@ -79,7 +97,6 @@ app.post('/login', async (req, res) => {
 });
 
 function auth(req, res, next) {
-    console.log('Auth middleware hit');
     const token = req.cookies.token;
     if (!token) {
         console.log('No token found');
@@ -95,8 +112,65 @@ function auth(req, res, next) {
     }
 }
 
-app.get('/welcome', auth, async (req, res) => {
+app.post('/welcome', auth, async (req, res) => {
     res.status(200).send('Welcome!');
+});
+
+app.post('/mcuData', async (req, res) => {
+    BpmValue = req.body.randomValue;
+
+    if (!BpmValue) {
+        return res.status(400).json({ message: 'No data received from MCU' });
+    }
+    console.log(BpmValue);
+    res.status(200).json({ value: BpmValue });
+});
+
+app.get('/mcuData', async (req, res) => {
+    const token = req.cookies.token;
+    try
+    {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.userId;
+
+        const newBPM = new Bpm({
+            user: userId,
+            value: BpmValue
+        });
+        
+        await newBPM.save();
+
+        const recentBPMs = await Bpm.find({ user: userId })
+        .sort({ timestamp: -1 }) // -1 for descending order (newest first)
+        .limit(100);
+
+        
+        const bpmCount = await Bpm.countDocuments({ user: userId });
+        console.log(`-------->${bpmCount}`)
+        if (bpmCount > 1000) {
+            const excess = bpmCount - 1000;
+            
+            // Delete the oldest records
+            const oldestRecords = await Bpm.find({ user: userId })
+            .sort({ timestamp: 1 }) // Sort by the oldest first
+            .limit(excess); // Limit to the number of excess records
+    
+            // Extract the IDs of the records to be deleted
+            const idsToDelete = oldestRecords.map(record => record._id);
+        
+            // Delete those records
+            await Bpm.deleteMany({ _id: { $in: idsToDelete } });
+
+            console.log(`${excess} oldest records deleted for user: ${userId}`);
+        }
+
+        // Reverse the array to plot from oldest to newest
+        res.status(200).json({recentBPMs: recentBPMs.reverse(), recentValue: BpmValue});
+    }
+    catch(err)
+    {
+        res.status(400).send(`${err}`);
+    }
 });
 
 const IP_ADDRESS = '192.168.188.77';
