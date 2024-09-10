@@ -1,0 +1,89 @@
+/* General form styles */
+.formL {
+    width: 280px;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+/* Form title */
+.form-titleL {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Styles for form groups */
+.form-groupL {
+    margin-bottom: 15px;
+}
+
+/* Styles for labels */
+.form-groupL label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* Styles for inputs */
+.form-groupL input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-groupL input:focus {
+    border-color: #10a0bb;
+}
+
+/* Styles for form actions (submit button and register link) */
+.form-actionsL {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+input[type="submit"] {
+    background-color: #10a0bb;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #0d8abf;
+}
+
+/* Styles for the register link */
+.register-linkL {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+    margin-top: 10px;
+}
+
+.register-linkL:hover {
+    color: #0056b3;
+}
+
+/* Styles for error message */
+.error-messageL {
+    color: red;
+    font-size: 12px;
+    margin-top: 10px;
+    text-align: center;
+}

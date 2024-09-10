@@ -55,19 +55,38 @@ function LoginPage(){
     };
 
     return (
-        <form onSubmit={handleSubmit} className='form'>
-        <div className="email">
-            <label htmlFor="email">Email: </label>
-            <input type="email" name="email" value = {email} id="email" onChange={(e)=>{setEmail(e.target.value)}} required />
-        </div>
-        <div className='pword'>
-            <label htmlFor="password">Password: </label>
-            <input type="password" name="password" id="password" value = {Password} onChange={(e)=>{setPassword(e.target.value)}} required />
-        </div>
-        <input type="submit" value="Login" />
-        <span style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px', textDecoration: 'underline' }} onClick={toSignupPage}>Register?</span>
-        <div>{iscorrectPassword ? "" : "Incorrect Password! Try Again."}</div>
-    </form>
+        <form onSubmit={handleSubmit} className='formL'>
+            <h2 className='form-titleL'>Login</h2>
+            <div className="form-groupL">
+                <label htmlFor="email">Email</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    required 
+                    placeholder="Enter your email" 
+                />
+            </div>
+            <div className='form-groupL'>
+                <label htmlFor="password">Password</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    value={Password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    required 
+                    placeholder="Enter your password" 
+                />
+            </div>
+            <div className='form-actionsL'>
+                <input type="submit" value="Login" />
+                <span className='register-linkL' onClick={toSignupPage}>Register?</span>
+            </div>
+            <div className='error-messageL'>{iscorrectPassword ? "" : "Incorrect Password! Try Again."}</div>
+        </form>
     )
 }
 

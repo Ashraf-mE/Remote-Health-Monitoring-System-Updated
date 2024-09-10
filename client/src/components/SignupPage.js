@@ -51,23 +51,52 @@ function SignupPage() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className='form'>
-            <div className="email">
-                <label htmlFor="email">Email: </label>
-                <input type="email" name="email" value = {email} id="email" onChange={(e)=>{setEmail(e.target.value)}} required />
-            </div>
-            <div className="uname">
-                <label htmlFor="username">username: </label>
-                <input type="text" name="username" value = {userName} id="username" onChange={(e)=>{setUserName(e.target.value)}} required />
-            </div>
-            <div className='pword'>
-                <label htmlFor="password">Password: </label>
-                <input type="password" name="password" id="password" value = {password} onChange={(e)=>{setPassword(e.target.value)}} required />
-            </div>
-            {error && <div className="error-message">{error}</div>}
-            <input type="submit" value="SignUp" />
-            <span style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px', textDecoration: 'underline' }}onClick={goToLogin}>Login</span>
-        </form>
+<form onSubmit={handleSubmit} className='formS'>
+    <h2 className='form-titleS'>Sign Up</h2>
+    <div className="form-groupS">
+        <label htmlFor="email">Email</label>
+        <input 
+            type="email" 
+            name="email" 
+            id="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+            placeholder="Enter your email" 
+        />
+    </div>
+    <div className="form-groupS">
+        <label htmlFor="username">Username</label>
+        <input 
+            type="text" 
+            name="username" 
+            id="username" 
+            value={userName} 
+            onChange={(e) => setUserName(e.target.value)} 
+            required 
+            placeholder="Enter your username" 
+        />
+    </div>
+    <div className='form-groupS'>
+        <label htmlFor="password">Password</label>
+        <input 
+            type="password" 
+            name="password" 
+            id="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+            placeholder="Enter your password" 
+        />
+    </div>
+    {error && <div className="error-messageS">{error}</div>}
+    <div className='form-actionsS'>
+        <input type="submit" value="Sign Up" />
+        <span className='login-linkS' onClick={goToLogin}>Login</span>
+    </div>
+</form>
+
+
     );
 };
 

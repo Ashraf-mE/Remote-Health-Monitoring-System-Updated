@@ -151,7 +151,7 @@ app.get('/mcuData', async (req, res) => {
 
         const recentSensorData = await sensorData.find({ user: userId })
         .sort({ timestamp: -1 }) // -1 for descending order (newest first)
-        .limit(200);
+        .limit(150);
 
         const sensorDataCount = await sensorData.countDocuments({ user: userId });
         console.log(`-------->${sensorDataCount}`)

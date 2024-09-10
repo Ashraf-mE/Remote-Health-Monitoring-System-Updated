@@ -56,7 +56,7 @@ function Welcome() {
             } catch (error) {
                 if (retries > 0) {
                     console.log(`Auth check failed, retrying... (${retries} attempts left)`);
-                    setTimeout(() => checkAuth(retries - 1), 1000);
+                    setTimeout(() => checkAuth(retries - 1), 2000);
                 } else {
                     console.error("Auth check failed after retries:", error);
                     navigate('/login');
@@ -87,7 +87,7 @@ function Welcome() {
 
             fetchData();
 
-            const intervalId = setInterval(fetchData, 5000);
+            const intervalId = setInterval(fetchData, 1000);
             return () => clearInterval(intervalId);
         }
     }, [isAuthenticated, sensorDataArr]);
