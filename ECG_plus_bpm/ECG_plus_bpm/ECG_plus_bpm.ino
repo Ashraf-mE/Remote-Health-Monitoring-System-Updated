@@ -13,6 +13,15 @@ const char* serverName = "http://192.168.188.77:3005/mcuData";
 unsigned long lastTime = 0;
 unsigned long timerDelay = 1000;
 
+// Function to simulate data generation for bpm and ECG values
+float getBPM() {
+  return random(60, 100); // Simulated random bpm value
+}
+
+float getECG() {
+  return random(0, 101); // Simulated ECG channel value
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -32,20 +41,51 @@ void setup() {
 void loop() {
   if ((millis() - lastTime) > timerDelay) {
     if (WiFi.status() == WL_CONNECTED) {
-      // Generate a random value between 0 and 100
-      float randomValue = random(0, 101);
+      // Default values for bpm and ECG
+      float bpm = 0;
+      float ecg1 = 0;
+      float ecg2 = 0;
+      float ecg3 = 0;
 
-      // Create a JSON object to send only one value
+      // Assume some conditions here to check whether the equipment is in use
+      bool bpmInUse = true;      // bpm equipment status
+      bool ecgInUse = true;      // ECG equipment status
+
+      // If bpm equipment is in use, update bpm value
+      if (bpmInUse) {
+        bpm = getBPM();
+      }
+
+      // If ECG equipment is in use, update ECG values
+      if (ecgInUse) {
+        ecg1 = getECG();
+        ecg2 = getECG();
+        ecg3 = getECG();
+      }
+
+      // Create a JSON object to send bpm and ECG values
       JSONVar jsonObject;
-      jsonObject["randomValue"] = randomValue;
+      jsonObject["bpm"] = bpm;
+      JSONVar ecgObject; // Nested JSON object for ECG channels
+      ecgObject["ecg1"] = ecg1;
+      ecgObject["ecg2"] = ecg2;
+      ecgObject["ecg3"] = ecg3;
+      jsonObject["ecg"] = ecgObject; // Add ECG data to main JSON
 
       String jsonString = JSON.stringify(jsonObject);
 
       // Send HTTP POST request
       int httpResponseCode = httpPOSTRequest(serverName, jsonString);
-      
-      Serial.print("Random value: ");
-      Serial.println(randomValue);
+
+      // Print values
+      Serial.print("BPM: ");
+      Serial.println(bpm);
+      Serial.print("ECG1: ");
+      Serial.println(ecg1);
+      Serial.print("ECG2: ");
+      Serial.println(ecg2);
+      Serial.print("ECG3: ");
+      Serial.println(ecg3);
 
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);

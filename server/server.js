@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import dbModule from "./dbConnect.js";
 import jwt from 'jsonwebtoken';
 import cookieParser from "cookie-parser";
-const {dbConnect, User, Bpm} = dbModule;
+const {dbConnect, User, sensorData} = dbModule;
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import mongoose from "mongoose";
@@ -33,7 +33,7 @@ app.use(express.json());
 
 dbConnect();
 
-let BpmValue;
+let sensorData_rec;
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -96,6 +96,11 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.send('Logged out');
+});
+
 function auth(req, res, next) {
     const token = req.cookies.token;
     if (!token) {
@@ -117,13 +122,12 @@ app.post('/welcome', auth, async (req, res) => {
 });
 
 app.post('/mcuData', async (req, res) => {
-    BpmValue = req.body.randomValue;
+    sensorData_rec = req.body;
 
-    if (!BpmValue) {
+    if (!sensorData_rec) {
         return res.status(400).json({ message: 'No data received from MCU' });
     }
-    console.log(BpmValue);
-    res.status(200).json({ value: BpmValue });
+    res.status(200).json({ bpm: sensorData_rec.bpm, ecg: sensorData_rec.ecg });
 });
 
 app.get('/mcuData', async (req, res) => {
@@ -133,25 +137,29 @@ app.get('/mcuData', async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.userId;
 
-        const newBPM = new Bpm({
+        const newsensorData = new sensorData({
             user: userId,
-            value: BpmValue
+            bpm: sensorData_rec.bpm,  // The BPM value
+            ecg: {            // The ECG values
+                ecg1: sensorData_rec.ecg['ecg1'] || 0,  // Default to 0 if ecgValue1 is undefined
+                ecg2: sensorData_rec.ecg['ecg2'] || 0,  // Default to 0 if ecgValue2 is undefined
+                ecg3: sensorData_rec.ecg['ecg3'] || 0   // Default to 0 if ecgValue3 is undefined
+            }
         });
         
-        await newBPM.save();
+        await newsensorData.save();
 
-        const recentBPMs = await Bpm.find({ user: userId })
+        const recentSensorData = await sensorData.find({ user: userId })
         .sort({ timestamp: -1 }) // -1 for descending order (newest first)
-        .limit(100);
+        .limit(200);
 
-        
-        const bpmCount = await Bpm.countDocuments({ user: userId });
-        console.log(`-------->${bpmCount}`)
-        if (bpmCount > 1000) {
-            const excess = bpmCount - 1000;
+        const sensorDataCount = await sensorData.countDocuments({ user: userId });
+        console.log(`-------->${sensorDataCount}`)
+        if (sensorDataCount > 1000) {
+            const excess = sensorDataCount - 1000;
             
             // Delete the oldest records
-            const oldestRecords = await Bpm.find({ user: userId })
+            const oldestRecords = await sensorData.find({ user: userId })
             .sort({ timestamp: 1 }) // Sort by the oldest first
             .limit(excess); // Limit to the number of excess records
     
@@ -159,13 +167,13 @@ app.get('/mcuData', async (req, res) => {
             const idsToDelete = oldestRecords.map(record => record._id);
         
             // Delete those records
-            await Bpm.deleteMany({ _id: { $in: idsToDelete } });
+            await sensorData.deleteMany({ _id: { $in: idsToDelete } });
 
             console.log(`${excess} oldest records deleted for user: ${userId}`);
         }
-
+        
         // Reverse the array to plot from oldest to newest
-        res.status(200).json({recentBPMs: recentBPMs.reverse(), recentValue: BpmValue});
+        res.status(200).json({recentSensorData: recentSensorData.reverse(), recentValue: sensorData_rec});
     }
     catch(err)
     {

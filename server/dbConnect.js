@@ -1,5 +1,6 @@
 import mongoose, { mongo } from "mongoose";
 import dotenv from "dotenv";
+import { json } from "express";
 dotenv.config();
 
 async function dbConnect()
@@ -20,13 +21,18 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true }
 })
 
-const bpmSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
-    value: {type: Number, required: true},
-    timestamp: {type: Date, default: Date.now}
+const sensorDataSchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    bpm: { type: Number, required: true },
+    ecg: {
+        ecg1: { type: Number, default: 0 },
+        ecg2: { type: Number, default: 0 },
+        ecg3: { type: Number, default: 0 }
+    },
+    timestamp: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', userSchema);
-const Bpm = mongoose.model('Bpm', bpmSchema);
+const sensorData = mongoose.model('sensorData', sensorDataSchema);
 
-export default {dbConnect, User, Bpm};
+export default {dbConnect, User, sensorData};
