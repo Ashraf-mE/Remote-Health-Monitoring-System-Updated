@@ -1,6 +1,6 @@
-import mongoose, { mongo } from "mongoose";
-import dotenv from "dotenv";
-import { json } from "express";
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const json = require("express");
 dotenv.config();
 
 async function dbConnect()
@@ -35,4 +35,4 @@ const sensorDataSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const sensorData = mongoose.model('sensorData', sensorDataSchema);
 
-export default {dbConnect, User, sensorData};
+module.exports = { dbConnect, User, sensorData };

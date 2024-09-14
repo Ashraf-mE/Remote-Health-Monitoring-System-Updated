@@ -20,7 +20,7 @@ float getBPM() {
 
 float getECG() {
   return random(0, 101); // Simulated ECG channel value
-}
+}3
 
 void setup() {
   Serial.begin(115200);
