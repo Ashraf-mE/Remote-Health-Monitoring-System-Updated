@@ -2,8 +2,8 @@
 #include <WebSocketsClient.h>
 #include <Arduino_JSON.h>
 
-const char* ssid = "shjl";
-const char* password = "Ashraf123";
+const char* ssid = "your_hotspot_name";
+const char* password = "your_password";
 
 // WebSocket server address and port
 const char* serverAddress = "192.168.188.77";
