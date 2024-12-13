@@ -12,6 +12,6 @@ https://excalidraw.com/#json=zWp0A9Ij17tGxlNtC_wtc,ZSflgYgyyhS1nu21-rwOPw
 
 ## Components Used
 - **NodeMCU (ESP8266)**  
-- **MCP3008 (8-Channel ADC)**  
+- **MCP3008 (10-bit ADC)**  
 - **LM393 Sound Sensor**  
 - **AD8232 ECG Sensor**  
